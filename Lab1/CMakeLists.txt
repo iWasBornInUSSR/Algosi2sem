@@ -3,4 +3,4 @@ project(Lab1)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Lab1 main.cpp src/screen.h src/shape.h src/vigure.h)
+add_executable(Lab1 main.cpp src/screen.h src/shape.h src/figure.h)
