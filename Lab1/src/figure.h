@@ -155,106 +155,46 @@ void up(shape &p, const shape &q) // поместить p над q
    /		          /
   /		            /
 sw ------ s ------ se */
-class parallelogram : rotatable, reflectable{
+class parallelogram : public rectangle, reflectable{
 protected:
-    point nw;
-    point sw;
-    point ne;
+    int h;
+    bool sideX;
+    bool horizontal;
 public:
-    parallelogram(point a, point b ,point c) : sw(a),nw(b),ne(c) {}
-
-    point north() const override {
-        return point((ne.x + nw.x) / 2, (ne.y + nw.y) / 2); // (ne.x -nw.x) / 2 - середина отрезка
+    parallelogram(point a, point b ,int h, bool sideX) : rectangle(a,b) , h(h), sideX(sideX) {
+        horizontal = true;
     }
 
-    point south() const override {
-        return point((seast().x + sw.x) / 2, (seast().y + sw.y) / 2);
-    }
-
-    point east() const override {
-        return point( (ne.x + seast().x) / 2,(ne.y + seast().y) / 2 );
-    }
-
-    point west() const override {
-        return point((nw.x + sw.x) / 2,(nw.y + sw.y) / 2);
-    }
-
-    point neast() const override {
-        return ne;
-    }
-
-    point seast() const override {
-        return point(ne.x - nw.x + sw.x,ne.y - nw.y + sw.y);
-    }
-
-    point nwest() const override {
-        return nw;
-    }
-
-    point swest() const override {
-        return sw;
-    }
-
+public:
     void draw() override {
-        put_line(nw, ne);
-        put_line(ne, seast());
-        put_line(seast(), sw);
-        put_line(sw, nw);
+        point newNW(nwest().x + horizontal * sideX * h,nwest().y + sideX * !horizontal * h);
+        point newNE(ne.x - horizontal * !sideX * h,ne.y - !horizontal * !sideX * h);
+        point newSW(sw.x + horizontal * !sideX * h,sw.y + !horizontal * !sideX * h);
+        point newSE(seast().x - horizontal * sideX * h,seast().y - sideX * !horizontal * h);
+        put_line(newNW,newNE);
+        put_line(newNE, newSE);
+        put_line(newSE, newSW);
+        put_line(newSW, newNW);
     }
-
-    void move(int a, int b) override {
-        nw.x += a;
-        nw.y += b;
-        sw.x += a;
-        sw.y += b;
-        ne.x += a;
-        ne.y += b;
-
-    }
-
     void resize(int d) override {
-        ne.x += (ne.x - sw.x) * (d - 1);
-        ne.y += (ne.y - sw.y) * (d - 1);
-        nw.x += (nw.x - sw.x) * (d - 1);
-        nw.y += (nw.y - sw.y) * (d - 1);
+        rectangle::resize(d);
+        h = h * d;
     }
 
     void rotate_left() override {
-       int dx = (nw.x - sw.x);
-       int dy = (nw.y - sw.y);
-        nw.x = -dy + sw.x;
-        nw.y = dx + sw.y;
-
-        dy = ne.y - sw.y;
-        dx = ne.x - sw.x;
-        ne.x = -dy + sw.x;
-        ne.y = dx + sw.y;
+        rectangle::rotate_left();
+        horizontal = !horizontal;
+        sideX = !sideX;
     }
 
     void rotate_right() override {
-        point se = seast();
-        int dx = (nw.x - se.x);
-        int dy = (nw.y - se.y);
-        nw.x =  dy + se.x;
-        nw.y = -dx + se.y;
-
-        dx =  ne.x - se.x;
-        dy =  ne.y - se.y;
-        ne.x = dy + se.x;
-        ne.y = -dx + se.y;
-
-        dx =  sw.x - se.x;
-        dy =  sw.y - se.y;
-        sw.x = dy + se.x;
-        sw.y = -dx + se.y;
+        rectangle::rotate_right();
+        horizontal = !horizontal;
+        sideX = !sideX;
     }
 
     void flip_horisontally() override {
-        int buf1 =  seast().x;
-        int buf = sw.x;
-        sw.x = nw.x;
-        nw.x = buf;
-        ne.x = buf1;
+        sideX = !sideX;
     }
 
     void flip_vertically() override {
@@ -269,16 +209,18 @@ public:
    /		  |       /
   /		      |     /
 sw ------ s --t--- se */
-class parallelogramWithCross : parallelogram , private cross { // Использую приватное наследование, чтобы был доступ к приватным членам
+class parallelogramWithCross : public parallelogram , private cross { // Использую приватное наследование, чтобы был доступ к приватным членам
 public:
-    parallelogramWithCross(point a, point b, point c) : parallelogram(a, b, c),
-    cross(point((parallelogram::west().x + parallelogram::east().x)/2,parallelogram::north().y),parallelogram::west()) {
+    parallelogramWithCross(point a, point b ,int h, bool sideX) : parallelogram(a, b, h,sideX),
+    cross(point((parallelogram::west().x + parallelogram::east().x)/2,parallelogram::north().y),point(sw.x + h / 2,parallelogram::west().y)) {
     //cross(parallelogram::north(),parallelogram::west()) {
     } // point((west().x + east().x)/2,north().y) - координаты точки k
     // По х это координаты х цента, по y координаты по y севера
 
     void draw() override {
         parallelogram::draw();
+        cross::n = point((parallelogram::west().x + parallelogram::east().x)/2,parallelogram::north().y);
+        cross::w = point(sw.x + h / 2,parallelogram::west().y);
         cross::draw();  //! north() и south() беруться из paral а не из cross
     }
 
@@ -293,7 +235,8 @@ public:
         cross::resize(d);
     }
 
-    void rotate_left() override {
+
+/*    void rotate_left() override {
         parallelogram::rotate_left();
         crossCoordinateOverride();
     }
@@ -315,22 +258,25 @@ public:
 private:
     void crossCoordinateOverride() {
         // Если параллелограмм в "горизонтальном состоянии"
-        if(parallelogram::west().y == parallelogram::east().y){
-            cross::n.x = (parallelogram::west().x + parallelogram::east().x)/2;
+        if (parallelogram::west().y == parallelogram::east().y) {
+            cross::n.x = (parallelogram::west().x + parallelogram::east().x) / 2;
             cross::n.y = parallelogram::north().y;
             cross::w = parallelogram::west();
         } else {         // Если параллелограмм в "вертикальном состоянии"
-            cross::w.y = (parallelogram::west().y + parallelogram::east().y)/2;
+            cross::w.y = (parallelogram::west().y + parallelogram::east().y) / 2;
             cross::w.x = parallelogram::north().x;
             cross::n = parallelogram::east();
         }
+    }*/
 /*        // Ищем точку с максимальной координатой по y , она будет севером
    cross::n = max({parallelogram::north(),parallelogram::south(),parallelogram::east(),parallelogram::west()});
         // Ищем точку с минимальной координатой по x , она будет востоком
-   cross::w = min({parallelogram::north(),parallelogram::south(),parallelogram::east(),parallelogram::west()});*/
+   cross::w = min({parallelogram::north(),parallelogram::south(),parallelogram::east(),parallelogram::west()});
+
     }
 
-/*    point max(initializer_list<point> initializerList) {
+
+*//*    point max(initializer_list<point> initializerList) {
        point max(0,-YMAX);
        for(auto c : initializerList)
            if(c.y > max.y) max = c;
