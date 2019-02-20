@@ -2,16 +2,23 @@
 using namespace std;
 #include "src/figure.h"
 int main(){
-    parallelogramWithCross hat(point(10,10),point(50,16),10, true);
- //    rectangle hat1(point(10,10),point(50,16));
- // parallelogram hat(point(10,10), point(18, 16), point(50,16));
- //   cross hat (point(15,15),point(10,10));
-    shape_refresh();
-    hat.resize(2);
-    hat.move(-5,3);
-    shape_refresh();
-    shape_refresh();
+    parallelogramWithCross upper(point(0, 0), point(34, 6),4, false);
+    parallelogramWithCross downer(point(5, 4), point(34, 10),4, false);
+    rectangle hat(point(0, 0), point(14, 5));
+    line brim(point(0,15),17);
+    myshape face(point(15,10), point(27,18));
+    //== 2.Ориентация ==
+    hat.rotate_right( );
+    brim.resize(2);
+    face.resize(2);
+    downer.flip_vertically();
+//== 3.Сборка изображения ==
+    face.move(0, 10); // В исходное положение
+    up(brim, face);
+    up(hat, brim);
+    down(downer, face);
+    up(upper,hat);
+    shape_refresh( );
     std::cout << "=== Generated... ===\n";
-    std::cin.get(); //Смотреть исходный набор*/
     return 0;
 }
