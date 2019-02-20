@@ -213,14 +213,12 @@ class parallelogramWithCross : public parallelogram , private cross { // Исп�
 public:
     parallelogramWithCross(point a, point b ,int h, bool sideX) : parallelogram(a, b, h,sideX),
     cross(point((parallelogram::west().x + parallelogram::east().x)/2,parallelogram::north().y),point(sw.x + h / 2,parallelogram::west().y)) {
-    //cross(parallelogram::north(),parallelogram::west()) {
-    } // point((west().x + east().x)/2,north().y) - координаты точки k
-    // По х это координаты х цента, по y координаты по y севера
+    }
+    // point((west().x + east().x)/2,north().y) - координаты точки k
+    // По х это координаты х центра, по y координаты по y севера
 
     void draw() override {
         parallelogram::draw();
-        cross::n = point((parallelogram::west().x + parallelogram::east().x)/2,parallelogram::north().y);
-        cross::w = point(sw.x + h / 2,parallelogram::west().y);
         cross::draw();  //! north() и south() беруться из paral а не из cross
     }
 
@@ -232,11 +230,11 @@ public:
 
     void resize(int d) override {
         parallelogram::resize(d);
-        cross::resize(d);
+       crossCoordinateOverride();
     }
 
 
-/*    void rotate_left() override {
+    void rotate_left() override {
         parallelogram::rotate_left();
         crossCoordinateOverride();
     }
@@ -246,47 +244,18 @@ public:
         crossCoordinateOverride();
     }
 
-    void flip_horisontally() override {
-        parallelogram::flip_horisontally();
-
-    }
-
-    void flip_vertically() override {
-        parallelogram::flip_vertically();
-    }
-
 private:
     void crossCoordinateOverride() {
         // Если параллелограмм в "горизонтальном состоянии"
-        if (parallelogram::west().y == parallelogram::east().y) {
+        if (horizontal) {
             cross::n.x = (parallelogram::west().x + parallelogram::east().x) / 2;
             cross::n.y = parallelogram::north().y;
-            cross::w = parallelogram::west();
+            cross::w = point(sw.x + h / 2,parallelogram::west().y);
         } else {         // Если параллелограмм в "вертикальном состоянии"
-            cross::w.y = (parallelogram::west().y + parallelogram::east().y) / 2;
-            cross::w.x = parallelogram::north().x;
-            cross::n = parallelogram::east();
+            cross::w = parallelogram::west();
+            cross::n.x = parallelogram::north().x;
+            cross::n.y = parallelogram::north().y - h / 2 ;
         }
-    }*/
-/*        // Ищем точку с максимальной координатой по y , она будет севером
-   cross::n = max({parallelogram::north(),parallelogram::south(),parallelogram::east(),parallelogram::west()});
-        // Ищем точку с минимальной координатой по x , она будет востоком
-   cross::w = min({parallelogram::north(),parallelogram::south(),parallelogram::east(),parallelogram::west()});
-
     }
-
-
-*//*    point max(initializer_list<point> initializerList) {
-       point max(0,-YMAX);
-       for(auto c : initializerList)
-           if(c.y > max.y) max = c;
-        return max;
-    }
-    point min(initializer_list<point> initializerList) {
-        point min(XMAX + 1,0);
-        for(auto c : initializerList)
-            if(c.x < min.x) min = c;
-        return min;
-    }*/
 };
 #endif //LAB1_VIGURE_H
