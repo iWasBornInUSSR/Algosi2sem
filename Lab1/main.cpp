@@ -2,7 +2,7 @@
 using namespace std;
 #include "src/figure.h"
 int main(){
-    parallelogramWithCross upper(point(0, 0), point(34, 6),4, false);
+    parallelogramWithCross upper(point(5, 4), point(34, 10),4, false);
     parallelogramWithCross downer(point(5, 4), point(34, 10),4, false);
     rectangle hat(point(0, 0), point(14, 5));
     line brim(point(0,15),17);
