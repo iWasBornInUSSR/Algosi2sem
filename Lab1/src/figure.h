@@ -4,10 +4,13 @@
 
 #ifndef LAB1_VIGURE_H
 #define LAB1_VIGURE_H
-// TODO:
-//  -create figure parallelogram
-//  -combine them
 #include "shape.h"
+void shape_refresh() // Перерисовка всех фигур
+{
+    screen_clear();
+    for (shape *p = shape::list; p; p = p->next) p->drawWithException();
+    screen_refresh();
+}
 class rectangle : public rotatable {
 /* nw ------ n ------ ne
    |		          |
@@ -64,14 +67,16 @@ public:
     }
 
     void draw();
+
 };
 
 void rectangle::draw() {
-    put_line(nwest(), ne);
-    put_line(ne, seast());
-    put_line(seast(), sw);
-    put_line(sw, nwest());
+            put_line(nwest(), ne);
+            put_line(ne, seast());
+            put_line(seast(), sw);
+            put_line(sw, nwest());
 }
+
 // ----------------
 /*           n
              |
@@ -135,12 +140,7 @@ public:
     }
 
 };
-void shape_refresh() // Перерисовка всех фигур
-{
-    screen_clear();
-    for (shape *p = shape::list; p; p = p->next) p->draw();
-    screen_refresh();
-}
+
 /*      nw ------ n -------- ne
        /		            /
       /                   /

@@ -12,7 +12,10 @@
     class point {	//Точка на экране
     public:
         int x, y;
-        point(int a = 0, int b = 0) : x(a), y(b){  }
+        explicit point(int a = 0, int b = 0) : x(a), y(b){  }
+        friend std::ostream& operator << (std::ostream& stream, const point& point1) {
+            return stream << "(" << point1.x << "," << point1.y << ")";
+        }
     };
 // Набор утилит для работы с экраном
     void put_point(int a, int b); // Вывод точки (2 варианта)
