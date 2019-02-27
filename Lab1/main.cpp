@@ -4,9 +4,9 @@ using namespace std;
 int main(){
 /*    parallelogram upper(point(10, -6), point(34, 10),4, false);
     parallelogramWithCross downer(point(5, 4), point(-34, 10),4, false);*/
-    rectangle hat(point(-2, -2), point(XMAX - 3, YMAX - 3));
- //   line brim(point(0,15),17);
- //   myshape face(point(15,134), point(27,18));
+ //   rectangle hat(point(-2, -2), point(XMAX - 3, YMAX - 3));
+   // line brim(point(0,15),17);
+   myshape face(point(15,-8), point(27,18));
     //== 2.Ориентация ==
 /*    hat.rotate_right( );
     brim.resize(2);

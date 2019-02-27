@@ -132,7 +132,13 @@ public:
     void what() {
         cerr << "Point with following coordinates: " << outPoint << " is out of screen" << endl;
     }
-
+    int Xdiff(){
+        return isOutX() * (getXborder() - getOutPoint().x);
+    }
+    int Ydiff(){
+        return isOutY() * (getYborder() - getOutPoint().y);
+    };
+private:
     const point &getOutPoint() const {
         return outPoint;
     }
@@ -195,9 +201,9 @@ void shape::drawWithException() {
         }
         catch (point_out_of_screen_exception &a) {
             screen_clear();
-            dx = dx + a.isOutX() * (a.getXborder() - a.getOutPoint().x);
-            dy = dy + a.isOutY() * (a.getYborder() - a.getOutPoint().y);
-            move(a.isOutX() * (a.getXborder() - a.getOutPoint().x), a.isOutY() * (a.getYborder() - a.getOutPoint().y));
+            dx = dx + a.Xdiff();
+            dy = dy + a.Ydiff();
+            move(a.Xdiff(), a.Ydiff());
         }
     }
     if (dx != 0 || dy != 0)
