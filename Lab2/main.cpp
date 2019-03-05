@@ -1,11 +1,13 @@
 #include <iostream>
 #include "source/Hash.h"
 int main() {
-    HashMap p;
-    for (HashMap::hashtype i = 0; i < 50; ++i) {
-        p.add(i);
-    }
-    whatHave(p);
-    std::cout << "Hello, World!" << std::endl;
+    HashMap A('A'),B('B'),C('C'),D('D'),E('E');
+    HashMap F = ((A & ~B) & ~C) ^ D | E;
+    A.printTable();
+    B.printTable();
+    C.printTable();
+    D.printTable();
+    E.printTable();
+    F.printTable();
     return 0;
 }
