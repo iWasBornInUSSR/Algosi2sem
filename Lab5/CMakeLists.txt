@@ -3,4 +3,4 @@ project(Lab5)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Lab5 main.cpp)
+add_executable(Lab5 main.cpp source/newHash.hpp)
