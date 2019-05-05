@@ -10,14 +10,9 @@
 using namespace std;
 #ifndef LAB2_HASH_H
 #define LAB2_HASH_H
-std::random_device dev;
-std::mt19937 engine(dev());
-class no_element_exception  : public exception{
-};
 class HashMap{
 
 public:
-    ///sort list????
     typedef unsigned short hashtype;
     HashMap() {
         table.resize(m);
@@ -25,12 +20,10 @@ public:
     }
     explicit HashMap(char i) : A(i) {
         table.resize(m);
-        std::uniform_int_distribution<hashtype> uid(0, 101);
-        for (int j = 0; j < m; ++j) {
-          if(engine() % 3 == 1)  add(uid(engine));
+        for (hashtype j = 0; j < m; ++j) {
+          if(rand() % 2)  add(j);
         }
     }
-    // % constructor with rand gen? %
     void add(hashtype val){
          table.at(hash_function(val)).push_back(val);
      }
@@ -47,30 +40,17 @@ public:
     HashMap operator^(const HashMap &B) const { return (~(*this & B) & (*this | B));};
 
     HashMap &operator=(const HashMap & copy){table = copy.table; return (*this);};
+
     friend void whatHave(HashMap &e);
 private:
     static const hashtype a = 97;
     static const hashtype b = 11;
     static const hashtype capacity = 26;
     static const hashtype m = capacity * 3;
+    static const hashtype MAXINT = 100;
     vector<list<hashtype> > table;
-    hashtype hash_function(hashtype x) {
+    static hashtype hash_function(hashtype x) {
         return (a * x + b) % m;
-    }
-    hashtype search(hashtype val) const{
-        hashtype key = 0;
-        bool  flag = true;
-        //error if cant find
-        for (hashtype i = 0; i < m && flag; ++i){
-            for(auto j : table.at(i))
-                if(j == val){
-                    key = i;
-                    flag = false;
-                    break;
-                }
-        }
-        if(flag) throw no_element_exception();
-        return key;
     }
     char A;
 };
@@ -92,14 +72,18 @@ void HashMap::printTable() {
 
 HashMap HashMap::operator~() const {
     HashMap C;
-    for (hashtype i = 0; i < 100; ++i) {
-        try {
-            search(i);
-            }
-        catch(no_element_exception&){
+    for (hashtype i = 0; i < MAXINT; ++i) {
+        if (table.at(hash_function(i)).empty())
             C.add(i);
+        else {
+            bool flag = true;
+            for (auto a = table.at(hash_function(i)).begin(); a != table.at(hash_function(i)).end() && flag; a++)
+                if (*a == i) flag = false;
+            if (flag) C.add(i);
         }
     }
+
+
     return C;
 }
 HashMap HashMap::operator|(const HashMap &B) const {
@@ -107,7 +91,7 @@ HashMap HashMap::operator|(const HashMap &B) const {
     HashMap C(*this);
     bool flag;
     for (hashtype i = 0; i < m; ++i) {
-        if(table.at(i) != B.table.at(i)) {
+        if(!table.at(i).empty()) {
             for (auto c : B.table.at(i)) {
                 flag = true;
                 for (auto d : this->table.at(i)) {
@@ -118,7 +102,7 @@ HashMap HashMap::operator|(const HashMap &B) const {
                 }
                 if(flag) C.add(c);
             }
-        }
+        } else C.table.at(i) = B.table.at(i);
     }
     return C;
 }
@@ -126,28 +110,25 @@ HashMap HashMap::operator&(const HashMap &B) const {
     HashMap C;
     bool flag;
     for (hashtype i = 0; i < m; ++i) {
+        if(!table.at(i).empty() && !B.table.at(i).empty()) {
             for (auto c : B.table.at(i)) {
                 flag = false;
-                for (auto d : this->table.at(i)) {
+                for (auto d : table.at(i)) {
                     if (c == d) {
                         flag = true;
                         break;
                     }
                 }
-                if(flag) C.add(c);
+                if (flag) C.add(c);
             }
+        }
     }
     return C;
 }
 void whatHave(HashMap &e){
-    for (HashMap::hashtype i = 0; i < 100; ++i) {
-        try {
-            e.search(i);
-            cout << i << " ";
-        }
-        catch(no_element_exception&){
-        }
-    }
+    for (HashMap::hashtype i = 0; i < HashMap::m; ++i)
+        for (unsigned short &a : e.table.at(i))
+            cout << a << " ";
     cout << endl;
 }
 #endif //LAB2_HASH_H

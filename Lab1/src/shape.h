@@ -173,7 +173,7 @@ public:
     }
 
     void what() {
-        cerr << "Shape with type: " + type + "and coordinates (nw,ne,sw,se) ( " << nw << ne << sw << se
+        cerr << "Shape with type: " + type + " and coordinates (nw,ne,sw,se) ( " << nw << ne << sw << se
              << " ) can't fit in to the screen " << endl;
     }
 };

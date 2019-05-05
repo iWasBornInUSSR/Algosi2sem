@@ -1,13 +1,11 @@
 #include <iostream>
 #include "source/Hash.h"
 int main() {
-    HashMap A('A'),B('B'),C('C'),D('D'),E('E');
-    HashMap F = ((A & ~B) & ~C) ^ D | E;
-    A.printTable();
-    B.printTable();
-    C.printTable();
-    D.printTable();
-    E.printTable();
-    F.printTable();
+    srand(time(0));
+    HashMap A('A');
+    HashMap B(A);
+    A.add(12);
+    whatHave(A);
+    whatHave(B);
     return 0;
 }
