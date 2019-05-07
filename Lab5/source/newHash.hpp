@@ -19,7 +19,8 @@ class HashMap {
 
 public:
     typedef unsigned short hashtype;
-
+    typedef vector<list < hashtype> *>
+    ptr_list_type;
     HashMap() {
         table.resize(m);
         A = '0';
@@ -61,6 +62,7 @@ public:
 
     HashMap &operator=(const HashMap &copy) {
         table = copy.table;
+        ptr_table = copy.ptr_table;
         return (*this);
     };
 
@@ -68,7 +70,7 @@ public:
 
     HashMap &mul(unsigned int n);
 
-    HashMap &excl();
+    HashMap &excl(HashMap &);
 
     friend void whatHave(HashMap &e);
 
@@ -79,7 +81,7 @@ private:
     static const hashtype m = capacity * 3;
     static const hashtype MAXINT = 100;
     vector<list<hashtype> > table;
-    list<list<hashtype> *> ptr_table;
+    ptr_list_type ptr_table;
 
     static hashtype hash_function(hashtype x) {
         return (a * x + b) % m;
@@ -180,22 +182,48 @@ HashMap &HashMap::concat(HashMap &B) {
     for (auto i : B.ptr_table) {
         add(i->front());
     }
+    return *this;
 }
 
 HashMap &HashMap::mul(unsigned int n) {
-    vector<hashtype> temp;
-    for (auto i = ptr_table.cbegin(); i != ptr_table.cend(); ++i) {
-        temp.push_back(i.operator*()->front());
-    }
+
     for (int j = 0; j < n; ++j) {
-        for (auto k : temp) {
-            add(k);
+        for (auto i : ptr_table) {
+            add(i->front());
         }
     }
+    return *this;
 }
 
-HashMap &HashMap::excl() {
-
+HashMap &HashMap::excl(HashMap &B) {
+    // экономия времени на обращение???
+    // запихать значения в вектор?
+    const ptr_list_type ptr_vector_cpy(ptr_table);
+    int deletionTimes = 0;
+    unsigned long size = ptr_vector_cpy.size() - B.ptr_table.size();
+    for (unsigned long i = 0; i < size + 1; ++i) {
+        bool flag = true;
+        for (unsigned long j = 0; j < B.ptr_table.size(); ++j) {
+            if (ptr_vector_cpy.at(i + j)->front() != B.ptr_table.at(j)->front()) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            // deleting from Map
+            for (auto c : B.ptr_table) {
+                table.at(hash_function(c->front())).erase(table.at(hash_function(c->front())).begin());
+            }
+            ptr_table.erase(ptr_table.cbegin() + i - B.ptr_table.size() * deletionTimes, ptr_table.cbegin()
+                                                                                         + i + B.ptr_table.size() -
+                                                                                         B.ptr_table.size() *
+                                                                                         deletionTimes); // subtract B.ptr_table.size() * deletionTimes
+            // becouse ptr_table size less than its copy
+            deletionTimes++;
+            i = i + B.ptr_table.size() - 1;
+        }
+    }
+    return *this;
 }
 
 #endif //LAB5_NEWHASH_HPP
