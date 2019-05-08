@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <iostream>
 #include <random>
-#include <bits/unique_ptr.h>
 #include <memory>
 
 using namespace std;
@@ -19,8 +18,8 @@ class HashMap {
 
 public:
     typedef unsigned short hashtype;
-    typedef vector<list < hashtype> *>
-    ptr_list_type;
+
+    // typedef std::vector<list < hashtype> *> ptr_list_type;
     HashMap() {
         table.resize(m);
         A = '0';
@@ -30,6 +29,16 @@ public:
         table.resize(m);
         for (hashtype j = 0; j < m; ++j) {
             if (rand() % 2) add(j);
+        }
+    }
+
+    HashMap(HashMap const &A) {
+        this->A = A.A + 1;
+        table.clear();
+        table.resize(m);
+        ptr_table.clear();
+        for (auto i : A.ptr_table) {
+            add(i->front());
         }
     }
 
@@ -61,8 +70,12 @@ public:
     HashMap operator^(const HashMap &B) const { return (~(*this & B) & (*this | B)); };
 
     HashMap &operator=(const HashMap &copy) {
-        table = copy.table;
-        ptr_table = copy.ptr_table;
+        table.clear();
+        table.resize(m);
+        ptr_table.clear();
+        for (auto i :copy.ptr_table) {
+            add(i->front());
+        }
         return (*this);
     };
 
@@ -81,7 +94,8 @@ private:
     static const hashtype m = capacity * 3;
     static const hashtype MAXINT = 100;
     vector<list<hashtype> > table;
-    ptr_list_type ptr_table;
+    vector<list < hashtype> *>
+    ptr_table;
 
     static hashtype hash_function(hashtype x) {
         return (a * x + b) % m;
@@ -165,15 +179,17 @@ HashMap HashMap::operator&(const HashMap &B) const {
 }
 
 void whatHave(HashMap &e) {
-    for (HashMap::hashtype i = 0; i < HashMap::m; ++i)
-        for (unsigned short &a : e.table.at(i))
+    for (HashMap::hashtype i = 0; i < HashMap::m; ++i) {
+        for (unsigned short &a : e.table.at(i)) {
             cout << a << " ";
+        }
+    }
     cout << endl;
 }
 
 void HashMap::printSequence() {
-    for (auto i = ptr_table.cbegin(); i != ptr_table.cend(); ++i) {
-        cout << i.operator*()->front() << " ";
+    for (auto i : ptr_table) {
+        cout << i->front() << " ";
     }
     cout << endl;
 }
@@ -198,7 +214,7 @@ HashMap &HashMap::mul(unsigned int n) {
 HashMap &HashMap::excl(HashMap &B) {
     // экономия времени на обращение???
     // запихать значения в вектор?
-    const ptr_list_type ptr_vector_cpy(ptr_table);
+    const vector<list < hashtype> *> ptr_vector_cpy(ptr_table);
     int deletionTimes = 0;
     unsigned long size = ptr_vector_cpy.size() - B.ptr_table.size();
     for (unsigned long i = 0; i < size + 1; ++i) {
@@ -218,7 +234,7 @@ HashMap &HashMap::excl(HashMap &B) {
                                                                                          + i + B.ptr_table.size() -
                                                                                          B.ptr_table.size() *
                                                                                          deletionTimes); // subtract B.ptr_table.size() * deletionTimes
-            // becouse ptr_table size less than its copy
+            // because ptr_table size less than its copy
             deletionTimes++;
             i = i + B.ptr_table.size() - 1;
         }

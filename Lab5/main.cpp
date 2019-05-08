@@ -9,10 +9,13 @@ using namespace std;
 //  -- new copy constructor
 //  -- недостаток способа - если в хэш - таблице на ключ приходиться больше 1 разного значения, то не работает
 //  -- открытая адресация??
+//  -- problem with copy constructor and =
 int main() {
-    HashMap A, B;
+    HashMap A, C;
     A.add({1, 2, 3, 5, 2, 3, 12, 5, 16, 1, 7, 3, 1, 5, 3, 71, 2, 3, 4, 2, 6, 2, 3});
-    B.add({2, 3});
-    A.excl(B).printTable();
+    C.add({2, 3});
+    HashMap B(A);
+    A = A & C;
     A.printSequence();
+    B.printSequence();
 }
