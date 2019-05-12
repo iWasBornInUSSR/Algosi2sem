@@ -1,6 +1,6 @@
 #include <iostream>
 #include <algorithm>
-#include <map>
+#include <set>
 #include <vector>
 #include "source/UltimateClass.hpp"
 
@@ -45,9 +45,14 @@ int main() {
     for(auto t : vec1)
         cout << t << " ";
     cout << endl;*/
-    STLseq A = {1, 2, 3, 4, 5, 10, 15};
-    STLseq B = {5, 3, 1, 6, 100};
-    A.contact(B).showSeq();
-    A.showMap();
-    return 0;
+    newSet A = {1, 2, 3, 4, 5, 10, 15, 15, 5, 10};
+    newSet B = {5, 10};
+    // multiset<int> As(A.begin(),A.end());
+    //multiset<int> Bs(B.begin(),B.end());
+    //set<int> C;
+    //set_union(As.cbegin(),As.cend(),Bs.cbegin(),Bs.cend(),inserter(C,C.begin()));
+    //for(auto & i : C) cout << i << endl;
+    A.excl(B).showMap();
+    // for(auto & i : A) cout << i << endl;
+
 }
