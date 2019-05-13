@@ -24,9 +24,7 @@ private:
         copy.erase(it1, copy.end());
         return copy;
     }
-    //
 public:
-    //newList()
     newList(char A, unsigned n) : name('A') {
         for (int i = 0; i < n; ++i) {
             if (rand() % 2) {
@@ -92,18 +90,6 @@ newList &newList::mul(unsigned n) {
 }
 
 newList &newList::excl(newList &another) { //стоит ли игра свеч??
-    /* vector<int> tmp1(variety.begin(),variety.cend());
-     vector<int> tmp2(another.variety.begin(),another.variety.cend());
-     unsigned size = another.variety.size();
-     for (auto it = tmp1.begin(); it != tmp1.end() - size;) {
-         if(equal(it,it + size,tmp2.cbegin(),tmp2.cend())){
-             it = tmp1.erase(it,it + size);
-         } else it++;
-     }
-     variety.clear();
-     variety.insert(tmp1.begin(),tmp1.end());*/
-    //vector<int> tmp1(variety.begin(),variety.cend());
-    //vector<int> tmp2(another.variety.begin(),another.variety.cend());
     unsigned size = another.variety.size();
     while (true) {
         auto it = search(variety.begin(), variety.end(), another.variety.begin(), another.variety.end());
@@ -111,21 +97,11 @@ newList &newList::excl(newList &another) { //стоит ли игра свеч??
             for (int i = 0; i < size; ++i) {
                 variety.erase(it++);
             }
-            //   tmp1.erase(it,it + size);
         } else break;
     }
-    //variety.clear();
-    //variety.insert(tmp1.begin(),tmp1.end());
     return *this;
 }
 
-//
-//STLseq STLseq::symDiff(STLseq &another) {
-//    STLseq C(1);
-//    set_symmetric_difference(variety.cbegin(),variety.cend(),another.variety.cbegin(),variety.cend(),C.variety.begin());
-//    C.showMap();
-//    return C;
-//}
 newList newList::operator^(newList &another) {
 
     list<int> copy(makeSet());
