@@ -69,8 +69,10 @@ void STLseq::showMap() {
 
 STLseq &STLseq::contact(STLseq &another) {
     bigKey = max(bigKey, another.bigKey);
-    variety.insert(another.variety.cbegin(), another.variety.cend());
-    seq.insert(seq.cend(), another.seq.cbegin(), another.seq.cend());
+    for (auto &i : another.variety) {
+        push_back(i.second);
+
+    }// add no insetrt
     return *this;
 }
 

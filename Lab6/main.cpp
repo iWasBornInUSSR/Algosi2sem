@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <map>
 #include <vector>
+#include <unordered_set>
 #include "source/UltimateClass.hpp"
 
 using namespace std;
@@ -45,9 +46,17 @@ int main() {
     for(auto t : vec1)
         cout << t << " ";
     cout << endl;*/
-    STLseq A = {1, 2, 3, 4, 5, 10, 15};
-    STLseq B = {5, 3, 1, 6, 100};
-    A.contact(B).showSeq();
-    A.showMap();
+    /* STLseq A = {1, 2, 3, 4, 5, 10, 15};
+     STLseq B = {5, 3, 1, 6, 100};
+     A.contact(B).showSeq();
+     A.showMap();
+    */
+    unordered_multiset<int> C;
+    C.insert({1, 2, 3, 4, 3, 6, 1, 9, 3, 1});
+    for (auto &i : C) cout << i << " ";
+    cout << endl;
+    C.insert({5, 1, 7, 9, 2});
+    for (auto &i : C) cout << i << " ";
+    cout << endl;
     return 0;
 }
