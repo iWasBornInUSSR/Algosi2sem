@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by Admin on 08.05.2019.
 //
@@ -6,22 +8,34 @@
 using namespace std;
 
 #include <set>
+#include <list>
+#include <numeric>
 
-class newSet {
+class newList {
 private:
     char name;
-    set<int> variety;
+    list<int> variety;
+    const unsigned MAX_INT = 100;
 
+    list<int> makeSet() {
+        list<int> copy(variety);
+        copy.sort();
+        auto it1 = unique(copy.begin(), copy.end());
+        copy.erase(it1, copy.end());
+        return copy;
+    }
+    //
 public:
-    newSet(char A, unsigned n) : name('A') {
+    //newList()
+    newList(char A, unsigned n) : name('A') {
         for (int i = 0; i < n; ++i) {
             if (rand() % 2) {
-                variety.insert(rand() % 100);
+                variety.push_back(rand() % MAX_INT);
             }
         }
     }
 
-    newSet &mul(unsigned n);
+    newList &mul(unsigned n);
 
     void push_back(int val) {
         variety.insert(variety.cend(), val);
@@ -32,41 +46,52 @@ public:
             push_back(a);
     }
 
-    newSet(initializer_list<int> list) : name('0') {
+    newList(initializer_list<int> list) : name('0') {
         for (auto &a : list)
             push_back(a);
     }
 
+    newList(list<int> copylist) : name('0'), variety(std::move(copylist)) {};
 
     void showMap();
 
-    newSet &contact(newSet &another);
+    newList &contact(newList &another);
 
-    newSet &excl(newSet &another);
+    newList &excl(newList &another);
+
+    newList operator^(newList &another);
+
+    newList operator&(newList &another);
+
+    newList operator~();
+
+    newList operator|(newList &another);
+
 
 };
 
-void newSet::showMap() {
+void newList::showMap() {
     for (auto &i : variety) {
         cout << i << " ";
     }
     cout << endl;
 }
 
-newSet &newSet::contact(newSet &another) {
-    variety.insert(another.variety.cbegin(), another.variety.cend());
+
+newList &newList::contact(newList &another) {
+    variety.insert(variety.cend(), another.variety.cbegin(), another.variety.cend());
     return *this;
 }
 
-newSet &newSet::mul(unsigned n) {
+newList &newList::mul(unsigned n) {
     auto tmp = variety;
     for (int i = 0; i < n; ++i) {
-        variety.insert(tmp.begin(), tmp.end());
+        variety.insert(variety.cend(), tmp.begin(), tmp.end());
     }
     return *this;
 }
 
-newSet &newSet::excl(newSet &another) { //стоит ли игра свеч??
+newList &newList::excl(newList &another) { //стоит ли игра свеч??
     /* vector<int> tmp1(variety.begin(),variety.cend());
      vector<int> tmp2(another.variety.begin(),another.variety.cend());
      unsigned size = another.variety.size();
@@ -93,6 +118,7 @@ newSet &newSet::excl(newSet &another) { //стоит ли игра свеч??
     //variety.insert(tmp1.begin(),tmp1.end());
     return *this;
 }
+
 //
 //STLseq STLseq::symDiff(STLseq &another) {
 //    STLseq C(1);
@@ -100,5 +126,40 @@ newSet &newSet::excl(newSet &another) { //стоит ли игра свеч??
 //    C.showMap();
 //    return C;
 //}
+newList newList::operator^(newList &another) {
+
+    list<int> copy(makeSet());
+    list<int> copyA(another.makeSet());
+    list<int> newObj;
+    set_symmetric_difference(copy.begin(), copy.end(), copyA.begin(), copyA.end(), back_inserter(newObj));
+    return newList(newObj);
+}
+
+newList newList::operator&(newList &another) {
+    list<int> copy(makeSet());
+    list<int> copyA(another.makeSet());
+    list<int> newObj;
+    set_intersection(copy.begin(), copy.end(), copyA.begin(), copyA.end(), back_inserter(newObj));
+    return newList(newObj);
+}
+
+newList newList::operator~() {
+    list<int> copy(makeSet());
+    list<int> full;
+    full.resize(MAX_INT + 1);
+    iota(full.begin(), full.end(), 0);
+    list<int> newObj;
+    set_difference(full.begin(), full.end(), copy.begin(), copy.end(), back_inserter(newObj));
+    return newList(newObj);
+}
+
+newList newList::operator|(newList &another) {
+    list<int> copy(makeSet());
+    list<int> copyA(another.makeSet());
+    list<int> newObj;
+    set_union(copy.begin(), copy.end(), copyA.begin(), copyA.end(), back_inserter(newObj));
+    return newList(newObj);
+}
+
 
 #endif //LAB6_ULTIMATECLASS_HPP

@@ -45,14 +45,20 @@ int main() {
     for(auto t : vec1)
         cout << t << " ";
     cout << endl;*/
-    newSet A = {1, 2, 3, 4, 5, 10, 15, 15, 5, 10};
-    newSet B = {5, 10};
+    newList A = {1, 2,10, 7, 5,6};
+    newList B = {6,5,7, 3,5,1};
     // multiset<int> As(A.begin(),A.end());
     //multiset<int> Bs(B.begin(),B.end());
     //set<int> C;
     //set_union(As.cbegin(),As.cend(),Bs.cbegin(),Bs.cend(),inserter(C,C.begin()));
     //for(auto & i : C) cout << i << endl;
-    A.excl(B).showMap();
+    //B.mul(2).showMap();
+    //A.contact(B).showMap();
+    //A.excl(B).showMap();
+    (A ^ B).showMap();
+    (A | B).showMap();
+    (A & B).showMap();
+    (~A).showMap();
     // for(auto & i : A) cout << i << endl;
 
 }
