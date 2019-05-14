@@ -7,10 +7,8 @@
 #define LAB6_ULTIMATECLASS_HPP
 using namespace std;
 
-#include <set>
 #include <list>
 #include <numeric>
-
 class newList {
 private:
     char name;
