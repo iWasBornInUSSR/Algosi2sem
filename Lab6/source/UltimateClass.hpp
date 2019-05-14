@@ -20,19 +20,16 @@ private:
     list<int> makeSet() {
         list<int> copy(variety);
         copy.sort();
-        auto it1 = unique(copy.begin(), copy.end());
-        copy.erase(it1, copy.end());
+        //auto it1 = unique(copy.begin(), copy.end());
+        //copy.erase(it1, copy.end());
         return copy;
     }
 public:
-    newList(char A, unsigned n) : name('A') {
+    explicit newList(unsigned n) : name('A') {
         for (int i = 0; i < n; ++i) {
-            if (rand() % 2) {
                 variety.push_back(rand() % MAX_INT);
-            }
         }
     }
-
     newList &mul(unsigned n);
 
     void push_back(int val) {
@@ -49,9 +46,11 @@ public:
             push_back(a);
     }
 
-    newList(list<int> copylist) : name('0'), variety(std::move(copylist)) {};
+    explicit newList(list<int> copylist) : name('0'), variety(std::move(copylist)) {};
 
-    void showMap();
+    void showSeq();
+
+    void showSet();
 
     newList &contact(newList &another);
 
@@ -65,16 +64,26 @@ public:
 
     newList operator|(newList &another);
 
+    newList operator/(newList &another);
+
 
 };
 
-void newList::showMap() {
+void newList::showSeq() {
     for (auto &i : variety) {
         cout << i << " ";
     }
     cout << endl;
 }
 
+void newList::showSet() {
+    list<int> copy = makeSet();
+    for (auto &i : copy) {
+        cout << i << " ";
+    }
+    cout << endl;
+
+}
 
 newList &newList::contact(newList &another) {
     variety.insert(variety.cend(), another.variety.cbegin(), another.variety.cend());
@@ -137,5 +146,12 @@ newList newList::operator|(newList &another) {
     return newList(newObj);
 }
 
+newList newList::operator/(newList &another) {
+    list<int> copy(makeSet());
+    list<int> copyA(another.makeSet());
+    list<int> newObj;
+    set_difference(copy.begin(), copy.end(), copyA.begin(), copyA.end(), back_inserter(newObj));
+    return newList(newObj);
+}
 
 #endif //LAB6_ULTIMATECLASS_HPP
