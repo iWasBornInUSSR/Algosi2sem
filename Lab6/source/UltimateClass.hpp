@@ -11,13 +11,12 @@ bool pred(const set<int>::iterator &a, const set<int>::iterator &b) {
 
 class coolIterSet {
 public:
+
     explicit coolIterSet(unsigned n) : name(code_name++) {
         for (int i = 0; i < n; ++i) {
-            if (rand() % 2) {
-                seq.push_back(variety.insert(rand() % 100));
-            }
+            seq.push_back(variety.insert(rand() % 100));
         }
-    };
+    }
 
     coolIterSet(multiset<int> copySet, list<multiset<int>::iterator> copyList) : variety(move(copySet)),
                                                                                  seq(move(copyList)),
@@ -44,6 +43,12 @@ public:
         cout << endl;
     }
 
+    void showSet() {
+        for (auto &i : variety) {
+            cout << i << " ";
+        }
+        cout << endl;
+    }
     coolIterSet &mul(unsigned n);
 
     coolIterSet &contact(coolIterSet &another);
@@ -56,10 +61,12 @@ public:
 
     coolIterSet operator^(coolIterSet &another);
 
+    coolIterSet operator/(coolIterSet &another);
+
     coolIterSet operator~();
 private:
     int name;
-    static int code_name;
+    static unsigned code_name;
     static const int MAX_INT = 100;
     multiset<int> variety;
     list<multiset<int>::iterator> seq;
@@ -101,7 +108,7 @@ coolIterSet coolIterSet::operator^(coolIterSet &another) {
     multiset<int> newObj;
     list<multiset<int>::iterator> newIts;
     set_symmetric_difference(variety.begin(), variety.end(), another.variety.begin(), another.variety.end(),
-                             back_inserter(newObj));
+                             inserter(newObj, newObj.cend()));
     for (auto it = newObj.begin(); it != newObj.end(); it++) {
         newIts.push_back(it);
     }
@@ -112,7 +119,7 @@ coolIterSet coolIterSet::operator&(coolIterSet &another) {
     multiset<int> newObj;
     list<multiset<int>::iterator> newIts;
     set_intersection(variety.begin(), variety.end(), another.variety.begin(), another.variety.end(),
-                     back_inserter(newObj));
+                     inserter(newObj, newObj.cend()));
     for (auto it = newObj.begin(); it != newObj.end(); it++) {
         newIts.push_back(it);
     }
@@ -126,7 +133,7 @@ coolIterSet coolIterSet::operator~() {
     }
     multiset<int> newObj;
     list<multiset<int>::iterator> newIts;
-    set_difference(full.begin(), full.end(), variety.begin(), variety.end(), back_inserter(newObj));
+    set_difference(full.begin(), full.end(), variety.begin(), variety.end(), inserter(newObj, newObj.cend()));
     for (auto it = newObj.begin(); it != newObj.end(); it++) {
         newIts.push_back(it);
     }
@@ -136,10 +143,23 @@ coolIterSet coolIterSet::operator~() {
 coolIterSet coolIterSet::operator|(coolIterSet &another) {
     multiset<int> newObj;
     list<multiset<int>::iterator> newIts;
-    set_union(variety.begin(), variety.end(), another.variety.begin(), another.variety.end(), back_inserter(newObj));
+    set_union(variety.begin(), variety.end(), another.variety.begin(), another.variety.end(),
+              inserter(newObj, newObj.cend()));
     for (auto it = newObj.begin(); it != newObj.end(); it++) {
         newIts.push_back(it);
     }
     return coolIterSet(newObj, newIts);
 }
+
+coolIterSet coolIterSet::operator/(coolIterSet &another) {
+    multiset<int> newObj;
+    list<multiset<int>::iterator> newIts;
+    set_difference(variety.begin(), variety.end(), another.variety.begin(), another.variety.end(),
+                   inserter(newObj, newObj.cend()));
+    for (auto it = newObj.begin(); it != newObj.end(); it++) {
+        newIts.push_back(it);
+    }
+    return coolIterSet(newObj, newIts);
+}
+
 #endif //LAB6_ULTIMATECLASS_HPP
