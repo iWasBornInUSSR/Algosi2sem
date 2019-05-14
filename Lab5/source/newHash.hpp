@@ -11,7 +11,6 @@
 #include <iostream>
 #include <random>
 #include <memory>
-#include <algorithm>
 
 using namespace std;
 
@@ -23,39 +22,39 @@ public:
     // typedef std::vector<list < hashtype> *> ptr_list_type;
     HashMap() {
         table.resize(m);
-        mark = numb++;
+        A = '0';
     }
 
-    explicit HashMap(char i) : mark(numb++) {
+    explicit HashMap(char i) : A(i) {
         table.resize(m);
         for (hashtype j = 0; j < m; ++j) {
             if (rand() % 2) add(j);
         }
     }
 
-    HashMap(initializer_list<hashtype> vals) : mark(numb++) {
-        table.resize(m);
-        for (auto &i : vals) {
-            add(i);
-        }
-    }
     HashMap(HashMap const &A) {
-        mark = numb++;
+        this->A = A.A + 1;
+        table.clear();
         table.resize(m);
+        ptr_table.clear();
         for (auto i : A.ptr_table) {
-            add(*i);
+            add(i->front());
         }
     }
 
     void add(hashtype val) {
-        list<hashtype> &cpy = table.at(hash_function(val));
-        ptr_table.push_back(cpy.insert(cpy.end(), val));
+        table.at(hash_function(val)).push_back(val);
+        ptr_table.push_back(&table.at(hash_function(val)));
     }
 
     void add(initializer_list<hashtype> vals) {
         for (auto &i : vals) {
             add(i);
         }
+    }
+
+    list<hashtype> get(hashtype key) {
+        return table.at(key);
     }
 
     void printTable();
@@ -72,9 +71,10 @@ public:
 
     HashMap &operator=(const HashMap &copy) {
         table.clear();
+        table.resize(m);
         ptr_table.clear();
         for (auto i :copy.ptr_table) {
-            add(*i);
+            add(i->front());
         }
         return (*this);
     };
@@ -88,28 +88,25 @@ public:
     friend void whatHave(HashMap &e);
 
 private:
-    static unsigned numb;
     static const hashtype a = 97;
     static const hashtype b = 11;
     static const hashtype capacity = 26;
     static const hashtype m = capacity * 3;
     static const hashtype MAXINT = 100;
     vector<list<hashtype> > table;
-    list<list<hashtype>::iterator> ptr_table;
+    vector<list < hashtype> *>
+    ptr_table;
 
-    static bool pred(const list<hashtype>::iterator &c, const list<hashtype>::iterator &d) {
-        return *c == *d;
-    }
     static hashtype hash_function(hashtype x) {
         return (a * x + b) % m;
     }
 
-    unsigned mark;
+    char A;
 };
 
 void HashMap::printTable() {
 
-    printf("HashMap %d:\n", mark);
+    printf("HashMap %c:\n", A);
     hashtype p = 0;
     for (auto &i : table) {
         p++;
@@ -130,8 +127,8 @@ HashMap HashMap::operator~() const {
             C.add(i);
         else {
             bool flag = true;
-            for (auto t = table.at(hash_function(i)).begin(); t != table.at(hash_function(i)).end() && flag; t++)
-                if (*t == i) flag = false;
+            for (auto a = table.at(hash_function(i)).begin(); a != table.at(hash_function(i)).end() && flag; a++)
+                if (*a == i) flag = false;
             if (flag) C.add(i);
         }
     }
@@ -192,23 +189,23 @@ void whatHave(HashMap &e) {
 
 void HashMap::printSequence() {
     for (auto i : ptr_table) {
-        cout << *i << " ";
+        cout << i->front() << " ";
     }
     cout << endl;
 }
 
 HashMap &HashMap::concat(HashMap &B) {
     for (auto i : B.ptr_table) {
-        add(*i);
+        add(i->front());
     }
     return *this;
 }
 
 HashMap &HashMap::mul(unsigned int n) {
-    auto cpy = ptr_table;
+
     for (int j = 0; j < n; ++j) {
-        for (auto i : cpy) {
-            add(*i);
+        for (auto i : ptr_table) {
+            add(i->front());
         }
     }
     return *this;
@@ -217,40 +214,30 @@ HashMap &HashMap::mul(unsigned int n) {
 HashMap &HashMap::excl(HashMap &B) {
     // экономия времени на обращение???
     // запихать значения в вектор?
-//    const vector<list < hashtype> *> ptr_vector_cpy(ptr_table);
-//    int deletionTimes = 0;
-//    unsigned long size = ptr_vector_cpy.size() - B.ptr_table.size();
-//    for (unsigned long i = 0; i < size + 1; ++i) {
-//        bool flag = true;
-//        for (unsigned long j = 0; j < B.ptr_table.size(); ++j) {
-//            if (ptr_vector_cpy.at(i + j)->front() != B.ptr_table.at(j)->front()) {
-//                flag = false;
-//                break;
-//            }
-//        }
-//        if (flag) {
-//            // deleting from Map
-//            for (auto c : B.ptr_table) {
-//                table.at(hash_function(c->front())).erase(table.at(hash_function(c->front())).begin());
-//            }
-//            ptr_table.erase(ptr_table.cbegin() + i - B.ptr_table.size() * deletionTimes, ptr_table.cbegin()
-//                                                                                         + i + B.ptr_table.size() -
-//                                                                                         B.ptr_table.size() *
-//                                                                                         deletionTimes); // subtract B.ptr_table.size() * deletionTimes
-//            // because ptr_table size less than its copy
-//            deletionTimes++;
-//            i = i + B.ptr_table.size() - 1;
-//        }
-//    }
-    unsigned size = B.ptr_table.size();
-    while (true) {
-        auto it = search(ptr_table.begin(), ptr_table.end(), B.ptr_table.begin(), B.ptr_table.end(), pred);
-        if (it != ptr_table.end()) {
-            for (int i = 0; i < size; ++i) {
-                table.at(hash_function(**it)).erase(*it);
-                it = ptr_table.erase(it);
+    const vector<list < hashtype> *> ptr_vector_cpy(ptr_table);
+    int deletionTimes = 0;
+    unsigned long size = ptr_vector_cpy.size() - B.ptr_table.size();
+    for (unsigned long i = 0; i < size + 1; ++i) {
+        bool flag = true;
+        for (unsigned long j = 0; j < B.ptr_table.size(); ++j) {
+            if (ptr_vector_cpy.at(i + j)->front() != B.ptr_table.at(j)->front()) {
+                flag = false;
+                break;
             }
-        } else break;
+        }
+        if (flag) {
+            // deleting from Map
+            for (auto c : B.ptr_table) {
+                table.at(hash_function(c->front())).erase(table.at(hash_function(c->front())).begin());
+            }
+            ptr_table.erase(ptr_table.cbegin() + i - B.ptr_table.size() * deletionTimes, ptr_table.cbegin()
+                                                                                         + i + B.ptr_table.size() -
+                                                                                         B.ptr_table.size() *
+                                                                                         deletionTimes); // subtract B.ptr_table.size() * deletionTimes
+            // because ptr_table size less than its copy
+            deletionTimes++;
+            i = i + B.ptr_table.size() - 1;
+        }
     }
     return *this;
 }
