@@ -30,6 +30,10 @@ public:
     }
     newList &mul(unsigned n);
 
+    coolIterSet(multiset<int> copySet, list<multiset<int>::iterator> copyList) : variety(move(copySet)),
+                                                                                 seq(move(copyList)),
+                                                                                 name(code_name++) {};
+
     void push_back(int val) {
         variety.insert(variety.cend(), val);
     }
@@ -71,7 +75,7 @@ void newList::showSeq() {
     for (auto &i : variety) {
         cout << i << " ";
     }
-    cout << endl;
+    return *this;
 }
 
 void newList::showSet() {
