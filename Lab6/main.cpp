@@ -1,8 +1,10 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <set>
 #include <vector>
 #include <unordered_set>
+#include <list>
 #include "source/UltimateClass.hpp"
 
 using namespace std;
@@ -51,12 +53,25 @@ int main() {
      A.contact(B).showSeq();
      A.showMap();
     */
-    unordered_multiset<int> C;
+    multiset<int> A;
+    list<decltype(A.begin())> itList;
+    vector<int> data = {1,3,8,1,5,3,7};
+
+    for (auto &i : data){
+        itList.push_back(A.insert(i));
+    }
+    for(auto &i : itList)
+       cout << *i << " ";
+    for (auto & i : A){
+
+    }
+    ///~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   /* unordered_multiset<int> C;
     C.insert({1, 2, 3, 4, 3, 6, 1, 9, 3, 1});
     for (auto &i : C) cout << i << " ";
     cout << endl;
     C.insert({5, 1, 7, 9, 2});
     for (auto &i : C) cout << i << " ";
-    cout << endl;
+    cout << endl;*/
     return 0;
 }
