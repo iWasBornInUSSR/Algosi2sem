@@ -11,9 +11,10 @@ using namespace std;
 #include <numeric>
 class newList {
 private:
-    char name;
+    unsigned name;
     list<int> variety;
-    const unsigned MAX_INT = 100;
+    static unsigned code_name;
+    const static unsigned MAX_INT = 100;
 
     list<int> makeSet() {
         list<int> copy(variety);
@@ -23,7 +24,7 @@ private:
         return copy;
     }
 public:
-    explicit newList(unsigned n) : name('A') {
+    explicit newList(unsigned n) : name(code_name++) {
         for (int i = 0; i < n; ++i) {
                 variety.push_back(rand() % MAX_INT);
         }
@@ -39,12 +40,12 @@ public:
             push_back(a);
     }
 
-    newList(initializer_list<int> list) : name('0') {
+    newList(initializer_list<int> list) : name(code_name++) {
         for (auto &a : list)
             push_back(a);
     }
 
-    explicit newList(list<int> copylist) : name('0'), variety(std::move(copylist)) {};
+    explicit newList(list<int> copylist) : name(code_name++), variety(std::move(copylist)) {};
 
     void showSeq();
 
@@ -68,12 +69,15 @@ public:
 };
 
 void newList::showSeq() {
+    cout << "Sequence name: " << name << endl;
     for (auto &i : variety) {
         cout << i << " ";
     }
+    cout << endl;
 }
 
 void newList::showSet() {
+    cout << "Set name :" << name << endl;
     list<int> copy = makeSet();
     for (auto &i : copy) {
         cout << i << " ";
